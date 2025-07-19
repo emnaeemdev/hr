@@ -67,12 +67,6 @@
         @endif
 
         <hr class="my-4">
-        <div class="text-center">
-            <small class="text-muted">
-                <strong>بيانات تجريبية:</strong><br>
-               hr@company.com<br>
-              password123
-            </small>
-        </div>
+
     </form>
 </x-guest-layout>
