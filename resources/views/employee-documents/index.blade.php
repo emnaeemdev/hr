@@ -95,8 +95,9 @@
                                                 <a href="{{ route('employee-documents.show', $document->id ?? 1) }}" class="btn btn-info btn-sm">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
+                                                
                                                 @if($document->file_path ?? false)
-                                                    <a href="{{ route('employee-documents.download', $document->id ?? 1) }}" class="btn btn-success btn-sm">
+                                                    <a href="{{ url('storage/' . $document->file_path) }} "target="_blank"  class="btn btn-success btn-sm">
                                                         <i class="fas fa-download"></i>
                                                     </a>
                                                 @endif

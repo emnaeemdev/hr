@@ -68,8 +68,8 @@
                                     @if($employeeDocument->file_path)
                                         <div class="mb-2">
                                             <small class="text-muted">الملف الحالي: 
-                                                <a href="{{ route('employee-documents.download', $employeeDocument) }}" target="_blank">
-                                                    {{ $employeeDocument->document_name }}
+                                                <a href="{{ url('storage/' . $employeeDocument->file_path) }}" target="_blank">
+                                                    {{ url('storage/' . $employeeDocument->file_path) }}
                                                 </a>
                                             </small>
                                         </div>

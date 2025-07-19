@@ -80,7 +80,7 @@
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-file me-2"></i>
                                     <span class="me-3">{{ basename($employeeDocument->file_path) }}</span>
-                                    <a href="{{ route('employee-documents.download', $employeeDocument) }}" class="btn btn-success btn-sm">
+                                    <a href="{{ url('storage/' . $employeeDocument->file_path) }} "target="_blank" class="btn btn-success btn-sm">
                                         <i class="fas fa-download me-1"></i>تحميل
                                     </a>
                                 </div>
