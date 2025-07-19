@@ -65,18 +65,20 @@
                             <thead class="table-dark">
                                 <tr>
                                     <th>#</th>
-                                    <th>اسم الأداة</th>
-                                    <th>الرقم التسلسلي</th>
-                                    <th>النوع</th>
-                                    <th>الحالة</th>
-                                    <th>تاريخ الشراء</th>
-                                    <th>الإجراءات</th>
+                                    <th>اسم الموظف</th>
+                                <th>اسم الأداة</th>
+                                <th>الرقم التسلسلي</th>
+                                <th>النوع</th>
+                                <th>الحالة</th>
+                                <th>تاريخ الشراء</th>
+                                <th>الإجراءات</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse($tools ?? [] as $tool)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $tool->employee ? $tool->employee->name : '-' }}</td>
                                         <td>{{ $tool->name ?? 'غير محدد' }}</td>
                                         <td>{{ $tool->serial_number ?? 'غير محدد' }}</td>
                                         <td>{{ $tool->type ?? 'غير محدد' }}</td>
@@ -110,7 +112,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="7" class="text-center py-4">
+                                        <td colspan="8" class="text-center py-4">
                                             <i class="fas fa-tools fa-3x text-muted mb-3"></i>
                                             <p class="text-muted">لا توجد أدوات مسجلة حالياً</p>
                                             <a href="{{ route('tools.create') }}" class="btn btn-primary">
