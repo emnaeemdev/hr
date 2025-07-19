@@ -14,7 +14,7 @@ class EmployeeController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Employee::with(['branch', 'tools', 'documents']);
+        $query = Employee::with(['branch', 'documents']);
 
         // Filter by branch
         if ($request->filled('branch_id')) {
@@ -33,9 +33,9 @@ class EmployeeController extends Controller
         // Filter by tools
         if ($request->filled('has_tools')) {
             if ($request->has_tools == '1') {
-                $query->whereHas('tools');
+                $query->whereHas('assignedTools');
             } elseif ($request->has_tools == '0') {
-                $query->whereDoesntHave('tools');
+                $query->whereDoesntHave('assignedTools');
             }
         }
 

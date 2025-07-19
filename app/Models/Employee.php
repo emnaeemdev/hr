@@ -77,6 +77,14 @@ class Employee extends Model
     }
 
     /**
+     * Get the tools currently assigned to the employee.
+     */
+    public function assignedTools(): HasMany
+    {
+        return $this->hasMany(Tool::class, 'assigned_employee_id')->where('status', 'assigned');
+    }
+
+    /**
      * Get all custom field values for this employee.
      */
     public function customFieldValues(): MorphMany

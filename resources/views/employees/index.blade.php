@@ -106,9 +106,12 @@
                                         <td class="text-danger">{{ number_format($employee->total_remaining_advances, 2) }} جنيه</td>
                                         <td class="text-success fw-bold">{{ number_format($employee->net_salary, 2) }} جنيه</td>
                                         <td class="text-center">
-                                            @if($employee->tools && $employee->tools->count() > 0)
+                                            @php
+                                                $assignedToolsCount = \App\Models\Tool::where('assigned_employee_id', $employee->id)->where('status', 'assigned')->count();
+                                            @endphp
+                                            @if($assignedToolsCount > 0)
                                                 <span class="badge bg-success">
-                                                    <i class="fas fa-check"></i> استلم ({{ $employee->tools->count() }})
+                                                    <i class="fas fa-check"></i> استلم ({{ $assignedToolsCount }})
                                                 </span>
                                             @else
                                                 <span class="badge bg-danger">
