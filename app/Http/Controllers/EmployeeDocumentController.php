@@ -255,10 +255,27 @@ class EmployeeDocumentController extends Controller
      */
     public function download(EmployeeDocument $employeeDocument)
     {
-        if (!$employeeDocument->file_path || !Storage::disk('public')->exists($employeeDocument->file_path)) {
+        if (!$employeeDocument->file_path) {
             return redirect()->back()->with('error', 'الملف غير موجود');
         }
 
-        return Storage::disk('public')->download($employeeDocument->file_path, $employeeDocument->document_name);
+        $filePath = storage_path('app/public/' . $employeeDocument->file_path);
+        
+        // Debug information
+        dd([
+            'employee_document_id' => $employeeDocument->id,
+            'file_path_from_db' => $employeeDocument->file_path,
+            'full_file_path' => $filePath,
+            'file_exists' => file_exists($filePath),
+            'storage_path' => storage_path('app/public/'),
+            'documents_dir_exists' => is_dir(storage_path('app/public/documents')),
+            'documents_dir_contents' => is_dir(storage_path('app/public/documents')) ? scandir(storage_path('app/public/documents')) : 'Directory does not exist'
+        ]);
+        
+        if (!file_exists($filePath)) {
+            return redirect()->back()->with('error', 'الملف غير موجود');
+        }
+
+        return response()->download($filePath, $employeeDocument->document_name ?: basename($filePath));
     }
 }
