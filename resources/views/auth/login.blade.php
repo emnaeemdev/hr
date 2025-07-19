@@ -70,9 +70,8 @@
         <div class="text-center">
             <small class="text-muted">
                 <strong>بيانات تجريبية:</strong><br>
-                المدير: admin@company.com<br>
-                الموارد البشرية: hr@company.com<br>
-                كلمة المرور: password123
+               hr@company.com<br>
+              password123
             </small>
         </div>
     </form>
