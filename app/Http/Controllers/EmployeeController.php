@@ -122,7 +122,7 @@ class EmployeeController extends Controller
      */
     public function show(Employee $employee)
     {
-        $employee->load('branch', 'advances', 'documents', 'tools', 'customFieldValues.customField');
+        $employee->load('branch', 'advances', 'documents', 'assignedTools', 'customFieldValues.customField');
         return view('employees.show', compact('employee'));
     }
 

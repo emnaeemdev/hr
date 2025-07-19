@@ -211,7 +211,7 @@
                     </a>
                 </div>
                 <div class="card-body">
-                    @if($employee->tools->count() > 0)
+                    @if($employee->assignedTools->count() > 0)
                         <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
@@ -225,7 +225,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($employee->tools as $tool)
+                                    @foreach($employee->assignedTools as $tool)
                                         <tr>
                                             <td>{{ $tool->name }}</td>
                                             <td>{{ $tool->serial_number ?? 'غير محدد' }}</td>
