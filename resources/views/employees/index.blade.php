@@ -120,9 +120,17 @@
                                             @endif
                                         </td>
                                         <td class="text-center">
-                                            @if($employee->documents && $employee->documents->count() > 0)
+                                            @php
+                                                $documentsCount = $employee->documents ? $employee->documents->count() : 0;
+                                                $pendingDocuments = $employee->documents ? $employee->documents->where('status', 'pending')->count() : 0;
+                                            @endphp
+                                            @if($pendingDocuments > 0)
+                                                <span class="badge bg-warning">
+                                                    <i class="fas fa-clock"></i> معلق ({{ $documentsCount }})
+                                                </span>
+                                            @elseif($documentsCount > 0)
                                                 <span class="badge bg-success">
-                                                    <i class="fas fa-check"></i> سلم ({{ $employee->documents->count() }})
+                                                    <i class="fas fa-check"></i> سلم ({{ $documentsCount }})
                                                 </span>
                                             @else
                                                 <span class="badge bg-danger">
