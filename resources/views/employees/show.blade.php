@@ -621,13 +621,13 @@ function updateCalculatorResults(values) {
             successElements[0].textContent = new Intl.NumberFormat('en-US', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
-            }).format(Math.ceil(values.entitlementsByHours)) + ' جنيه';
+            }).format(Math.round(values.entitlementsByHours)) + ' جنيه';
         }
         if (successElements[1]) {
             successElements[1].textContent = new Intl.NumberFormat('en-US', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
-            }).format(Math.ceil(Math.max(0, values.entitlementsBySalary - values.totalAdvances))) + ' جنيه';
+            }).format(Math.round(Math.max(0, values.entitlementsBySalary - values.totalAdvances))) + ' جنيه';
         }
         
         const infoElements = calculatorSection.querySelectorAll('.text-info.fw-bold');
@@ -635,13 +635,13 @@ function updateCalculatorResults(values) {
             infoElements[0].textContent = new Intl.NumberFormat('en-US', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
-            }).format(Math.ceil(values.netSalaryByHours)) + ' جنيه';
+            }).format(Math.round(values.netSalaryByHours)) + ' جنيه';
         }
         if (infoElements[1]) {
             infoElements[1].textContent = new Intl.NumberFormat('en-US', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
-            }).format(Math.ceil(values.netSalaryBySalary)) + ' جنيه';
+            }).format(Math.round(values.netSalaryBySalary)) + ' جنيه';
         }
         
         // Update warning elements (full salary and daily salary)
@@ -650,7 +650,7 @@ function updateCalculatorResults(values) {
             warningElements[0].textContent = new Intl.NumberFormat('en-US', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
-            }).format(Math.ceil(values.fullSalary)) + ' جنيه';
+            }).format(Math.round(values.fullSalary)) + ' جنيه';
         }
         if (warningElements[1]) {
             warningElements[1].textContent = new Intl.NumberFormat('en-US', {
@@ -666,7 +666,7 @@ function updateCalculatorResults(values) {
         netSalaryDisplay.textContent = new Intl.NumberFormat('en-US', {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0
-        }).format(Math.ceil(Math.max(0, values.entitlementsBySalary - values.totalAdvances))) + ' جنيه';
+        }).format(Math.round(Math.max(0, values.entitlementsBySalary - values.totalAdvances))) + ' جنيه';
     }
     
     // Update the entitlements by salary display in the calculator
@@ -675,7 +675,7 @@ function updateCalculatorResults(values) {
         entitlementsBySalaryDisplay.textContent = new Intl.NumberFormat('en-US', {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0
-        }).format(Math.ceil(Math.max(0, values.entitlementsBySalary - values.totalAdvances))) + ' جنيه';
+        }).format(Math.round(Math.max(0, values.entitlementsBySalary - values.totalAdvances))) + ' جنيه';
     }
 }
 
@@ -828,7 +828,7 @@ function showErrorMessage(error) {
                                             $hourlyRate = (float) request('hourly_rate', 36.06);
                                             $fullSalary = $monthlyHours * $hourlyRate;
                                         @endphp
-                                        {{ number_format(ceil($fullSalary), 0, '.', ',') }} جنيه
+                                        {{ number_format(round($fullSalary), 0, '.', ',') }} جنيه
                                         <small class="text-muted">({{ number_format($monthlyHours, 0, '.', ',') }} ساعة × {{ number_format($hourlyRate, 0, '.', ',') }} جنيه)</small>
                                     </td>
                                 </tr>
@@ -857,7 +857,7 @@ function showErrorMessage(error) {
                                             $totalAdvances = $employee->advances->where('status', '!=', 'rejected')->sum('remaining_amount');
                                             $netSalary = max(0, $entitlementsBySalary - $totalAdvances);
                                         @endphp
-                                              {{ number_format(ceil($netSalary), 0, '.', ',') }} جنيه
+                                              {{ number_format(round($netSalary), 0, '.', ',') }} جنيه
 
                                     </td>
                                     
@@ -1012,7 +1012,7 @@ function showErrorMessage(error) {
         <div class="col-md-6">
             <div class="mb-2">
                 <strong>الراتب الشهري الكامل:</strong>
-                <span class="text-primary fw-bold">{{ number_format(ceil($fullSalary), 0, '.', ',') }} جنيه</span>
+                <span class="text-primary fw-bold">{{ number_format(round($fullSalary), 0, '.', ',') }} جنيه</span>
             </div>
             <div class="mb-2">
                 <strong>إجمالي السلف المتبقية:</strong>
@@ -1020,7 +1020,7 @@ function showErrorMessage(error) {
             </div>
             <div class="mb-2">
                 <strong>المستحقات (بالراتب):</strong>
-                <span class="text-success fw-bold" id="entitlements-by-salary-display">{{ number_format(ceil(max(0, $entitlementsBySalary - $totalAdvances)), 0, '.', ',') }} جنيه</span>
+                <span class="text-success fw-bold" id="entitlements-by-salary-display">{{ number_format(round(max(0, $entitlementsBySalary - $totalAdvances)), 0, '.', ',') }} جنيه</span>
             </div>
         </div>
     </div>

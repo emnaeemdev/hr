@@ -356,12 +356,12 @@ class EmployeeController extends Controller
             'data' => [
                 'daily_hours' => number_format($dailyHours, 0),
                 'actual_hours' => number_format($actualHours, 0),
-                'entitlements_by_hours' => number_format(ceil($entitlementsByHours), 0),
-            'full_salary' => number_format(ceil($fullSalary), 0),
+                'entitlements_by_hours' => number_format(round($entitlementsByHours), 0),
+            'full_salary' => number_format(round($fullSalary), 0),
             'daily_salary' => number_format($dailySalary, 0),
-            'entitlements_by_salary' => number_format(ceil($entitlementsBySalary), 0),
-            'net_salary_by_hours' => number_format(ceil($netSalaryByHours), 0),
-            'net_salary_by_salary' => number_format(ceil($netSalaryBySalary), 0),
+            'entitlements_by_salary' => number_format(round($entitlementsBySalary), 0),
+            'net_salary_by_hours' => number_format(round($netSalaryByHours), 0),
+            'net_salary_by_salary' => number_format(round($netSalaryBySalary), 0),
                 'total_advances' => number_format($totalAdvances, 0)
             ]
         ]);

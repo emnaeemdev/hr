@@ -488,7 +488,7 @@
                     </div>
                     <div class="info-item">
                         <div class="info-label"><i class="fas fa-money-bill-wave"></i> الراتب الشهري</div>
-                        <div class="info-value">{{ number_format(ceil($savedFullSalary), 0, '.', ',') }} جنيه</div>
+                        <div class="info-value">{{ number_format(round($savedFullSalary), 0, '.', ',') }} جنيه</div>
                     </div>
                     <div class="info-item">
                         <div class="info-label"><i class="fas fa-hand-holding-usd"></i> إجمالي السلف</div>
@@ -496,7 +496,7 @@
                     </div>
                     <div class="info-item">
                         <div class="info-label"><i class="fas fa-wallet"></i> الراتب الصافي</div>
-                        <div class="info-value">{{ number_format(ceil($savedNetSalaryBySalary), 0, '.', ',') }} جنيه</div>
+                        <div class="info-value">{{ number_format(round($savedNetSalaryBySalary), 0, '.', ',') }} جنيه</div>
                     </div>
 
                 </div>
@@ -536,12 +536,12 @@
                         </div>
                         <div class="calc-item calc-result">
                             <div class="calc-label">المستحقات</div>
-                            <div class="calc-value">{{ number_format(ceil($savedEntitlementsByHours), 0, '.', ',') }} جنيه</div>
+                            <div class="calc-value">{{ number_format(round($savedEntitlementsByHours), 0, '.', ',') }} جنيه</div>
                 <div class="calc-formula">{{ number_format($savedActualHours, 0, '.', ',') }} × {{ $savedHourlyRate }}</div>
                         </div>
                         <div class="calc-item calc-result">
                             <div class="calc-label">الراتب الصافي</div>
-                            <div class="calc-value">{{ number_format(ceil($savedNetSalaryByHours), 0, '.', ',') }} جنيه</div>
+                            <div class="calc-value">{{ number_format(round($savedNetSalaryByHours), 0, '.', ',') }} جنيه</div>
                 <div class="calc-formula">بعد خصم السلف ({{ number_format($savedTotalAdvances, 0, '.', ',') }} جنيه)</div>
                         </div>
                     </div>
@@ -553,7 +553,7 @@
                     <div class="calc-grid">
                         <div class="calc-item">
                             <div class="calc-label">الراتب الكامل</div>
-                            <div class="calc-value">{{ number_format(ceil($savedFullSalary), 0, '.', ',') }} جنيه</div>
+                            <div class="calc-value">{{ number_format(round($savedFullSalary), 0, '.', ',') }} جنيه</div>
                             <div class="calc-formula">{{ $savedMonthlyHours }} × {{ $savedHourlyRate }}</div>
                         </div>
                         <div class="calc-item">
@@ -563,12 +563,12 @@
                         </div>
                         <div class="calc-item calc-result">
                             <div class="calc-label">المستحقات</div>
-                            <div class="calc-value">{{ number_format(ceil($savedEntitlementsBySalary), 0, '.', ',') }} جنيه</div>
+                            <div class="calc-value">{{ number_format(round($savedEntitlementsBySalary), 0, '.', ',') }} جنيه</div>
                 <div class="calc-formula">{{ number_format($savedDailySalary, 0, '.', ',') }} × {{ $savedDaysWorked }}</div>
                         </div>
                         <div class="calc-item calc-result">
                             <div class="calc-label">الراتب الصافي</div>
-                            <div class="calc-value">{{ number_format(ceil($savedNetSalaryBySalary), 0, '.', ',') }} جنيه</div>
+                            <div class="calc-value">{{ number_format(round($savedNetSalaryBySalary), 0, '.', ',') }} جنيه</div>
                 <div class="calc-formula">بعد خصم السلف ({{ number_format($savedTotalAdvances, 0, '.', ',') }} جنيه)</div>
                         </div>
                     </div>
