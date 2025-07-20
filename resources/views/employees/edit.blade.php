@@ -64,7 +64,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="position" class="form-label">المنصب</label>
+                                    <label for="position" class="form-label">الوظيفة</label>
                                     <input type="text" class="form-control @error('position') is-invalid @enderror" 
                                            id="position" name="position" value="{{ old('position', $employee->position) }}">
                                     @error('position')
@@ -86,32 +86,7 @@
                             </div>
                         </div>
                         
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="work_hours" class="form-label">ساعات العمل الإجمالية <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control @error('work_hours') is-invalid @enderror" 
-                                           id="work_hours" name="work_hours" value="{{ old('work_hours', $employee->work_hours ?? 8) }}" 
-                                           min="1" step="0.5" required>
-                                    @error('work_hours')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="monthly_salary" class="form-label">الراتب الشهري <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control @error('monthly_salary') is-invalid @enderror" 
-                                           id="monthly_salary" name="monthly_salary" value="{{ old('monthly_salary', $employee->monthly_salary) }}" 
-                                           step="0.01" min="0" required>
-                                    <div class="form-text">بالجنيه المصري</div>
-                                    @error('monthly_salary')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
+
                         
                         <!-- Custom Fields -->
                         @if($customFields && $customFields->count() > 0)
@@ -190,6 +165,89 @@
                             </div>
                         @endif
                         
+                        <!-- Entitlements Calculator -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">حاسبة المستحقات</h5>
+                                    </div>
+                                    <div class="card-body" id="entitlements-section">
+                                        @php
+                                            // Get latest saved entitlement values or use defaults
+                                            $latestEntitlement = $employee->latestEntitlement;
+                                            $defaultMonthlyHours = $latestEntitlement ? $latestEntitlement->monthly_hours : 208;
+                                            $defaultHourlyRate = $latestEntitlement ? $latestEntitlement->hourly_rate : 36.06;
+                                            $defaultDaysWorked = $latestEntitlement ? $latestEntitlement->days_worked : 26;
+                                            $defaultMonthlyDays = $latestEntitlement ? $latestEntitlement->monthly_days : 26;
+                                            $savedNotes = $latestEntitlement ? $latestEntitlement->notes : '';
+                                        @endphp
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="mb-3">
+                                                    <label for="monthly_hours" class="form-label">عدد الساعات الشهرية</label>
+                                                    <input type="number" class="form-control" id="monthly_hours" value="{{ $defaultMonthlyHours }}" step="0.01">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="mb-3">
+                                                    <label for="hourly_rate" class="form-label">سعر الساعة (جنيه)</label>
+                                                    <input type="number" class="form-control" id="hourly_rate" value="{{ $defaultHourlyRate }}" step="0.01">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="mb-3">
+                                                    <label for="days_worked" class="form-label">عدد الأيام المعمولة</label>
+                                                    <input type="number" class="form-control" id="days_worked" value="{{ $defaultDaysWorked }}" step="0.01">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="mb-3">
+                                                    <label for="monthly_days" class="form-label">عدد الأيام الشهرية</label>
+                                                    <input type="number" class="form-control" id="monthly_days" value="{{ $defaultMonthlyDays }}" step="0.01">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row mt-3">
+                                            <div class="col-md-6">
+                                                <div class="card bg-light">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title">الحساب بالساعات</h6>
+                                                        <p class="mb-0">إجمالي الراتب: <span id="total_by_hours" class="fw-bold">7,500.48 جنيه</span></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="card bg-light">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title">الحساب بالراتب الكامل</h6>
+                                                        <p class="mb-0">إجمالي الراتب: <span id="total_by_salary" class="fw-bold">7,500.48 جنيه</span></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Save Entitlements Section -->
+                                        <div class="row mt-3">
+                                            <div class="col-12">
+                                                <div class="card border-primary">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title">حفظ نتائج المستحقات</h6>
+                                                        <form id="save-entitlements-form">
+                                                            <button type="submit" class="btn btn-primary">
+                                                                <i class="fas fa-save me-2"></i>حفظ النتائج
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="d-flex justify-content-end gap-2">
                             <a href="{{ route('employees.show', $employee) }}" class="btn btn-secondary">إلغاء</a>
                             <button type="submit" class="btn btn-primary">
@@ -203,3 +261,143 @@
     </div>
 </div>
 @endsection
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get input elements
+    const monthlyHoursInput = document.getElementById('monthly_hours');
+    const hourlyRateInput = document.getElementById('hourly_rate');
+    const daysWorkedInput = document.getElementById('days_worked');
+    const monthlyDaysInput = document.getElementById('monthly_days');
+    
+    // Function to calculate entitlements
+    function calculateEntitlements() {
+        const monthlyHours = parseFloat(monthlyHoursInput.value) || 0;
+        const hourlyRate = parseFloat(hourlyRateInput.value) || 0;
+        const daysWorked = parseFloat(daysWorkedInput.value) || 0;
+        const monthlyDays = parseFloat(monthlyDaysInput.value) || 0;
+        
+        // Calculate by hours
+        const totalByHours = (daysWorked / monthlyDays) * monthlyHours * hourlyRate;
+        
+        // Calculate by full salary
+        const totalBySalary = monthlyHours * hourlyRate;
+        
+        // Update display - by hours
+        document.getElementById('total_by_hours').textContent = totalByHours.toFixed(2) + ' جنيه';
+        
+        // Update display - by salary
+        document.getElementById('total_by_salary').textContent = totalBySalary.toFixed(2) + ' جنيه';
+    }
+    
+    // Add event listeners to all inputs
+    monthlyHoursInput.addEventListener('input', function() {
+        calculateEntitlements();
+        autoSaveEntitlements();
+    });
+    hourlyRateInput.addEventListener('input', function() {
+        calculateEntitlements();
+        autoSaveEntitlements();
+    });
+    daysWorkedInput.addEventListener('input', function() {
+        calculateEntitlements();
+        autoSaveEntitlements();
+    });
+    monthlyDaysInput.addEventListener('input', function() {
+        calculateEntitlements();
+        autoSaveEntitlements();
+    });
+    
+    // Initial calculation
+    calculateEntitlements();
+    
+    // Auto-save function
+    function autoSaveEntitlements() {
+        const monthlyHours = parseFloat(monthlyHoursInput.value) || 0;
+        const hourlyRate = parseFloat(hourlyRateInput.value) || 0;
+        const daysWorked = parseFloat(daysWorkedInput.value) || 0;
+        const monthlyDays = parseFloat(monthlyDaysInput.value) || 0;
+        
+        // Calculate entitlements
+        const dailyHours = monthlyDays > 0 ? monthlyHours / monthlyDays : 0;
+        const actualHours = daysWorked * dailyHours;
+        const entitlementsByHours = actualHours * hourlyRate;
+        
+        const fullSalary = monthlyHours * hourlyRate;
+        const dailySalary = monthlyDays > 0 ? fullSalary / monthlyDays : 0;
+        const entitlementsBySalary = daysWorked * dailySalary;
+        
+        const data = {
+            employee_id: {{ $employee->id }},
+            monthly_hours: monthlyHours,
+            hourly_rate: hourlyRate,
+            days_worked: daysWorked,
+            monthly_days: monthlyDays,
+            entitlements_by_hours: entitlementsByHours,
+            entitlements_by_salary: entitlementsBySalary,
+            notes: 'تم الحفظ تلقائياً عند التعديل',
+            _token: '{{ csrf_token() }}'
+        };
+        
+        // Save to database
+        fetch('/api/employees/{{ $employee->id }}/entitlements', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            console.log('تم حفظ المستحقات تلقائياً');
+        })
+        .catch(error => {
+            console.error('خطأ في حفظ المستحقات:', error);
+        });
+    }
+    
+    // Handle save entitlements form
+    document.getElementById('save-entitlements-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const monthlyHours = parseFloat(monthlyHoursInput.value) || 0;
+        const hourlyRate = parseFloat(hourlyRateInput.value) || 0;
+        const daysWorked = parseFloat(daysWorkedInput.value) || 0;
+        const monthlyDays = parseFloat(monthlyDaysInput.value) || 0;
+        const notes = '';
+        
+        const data = {
+            monthly_hours: monthlyHours,
+            hourly_rate: hourlyRate,
+            days_worked: daysWorked,
+            monthly_days: monthlyDays,
+            notes: notes,
+            _token: '{{ csrf_token() }}'
+        };
+        
+        try {
+            const response = await fetch('{{ route("employees.save-entitlements", $employee) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify(data)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('تم حفظ نتائج المستحقات بنجاح!');
+                document.getElementById('entitlements_notes').value = '';
+            } else {
+                alert('حدث خطأ أثناء حفظ النتائج: ' + (result.message || 'خطأ غير معروف'));
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('حدث خطأ أثناء حفظ النتائج');
+        }
+    });
+});
+</script>

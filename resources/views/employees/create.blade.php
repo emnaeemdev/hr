@@ -12,7 +12,7 @@
                     </a>
                 </div>
                 <div class="card-body">
-                    <form action="{{ route('employees.store') }}" method="POST">
+                    <form action="{{ route('employees.store') }}" method="POST" id="employee-form">
                         @csrf
                         
                         <div class="row">
@@ -64,7 +64,7 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="position" class="form-label">المنصب</label>
+                                    <label for="position" class="form-label">الوظيفة</label>
                                     <input type="text" class="form-control @error('position') is-invalid @enderror" 
                                            id="position" name="position" value="{{ old('position') }}">
                                     @error('position')
@@ -85,32 +85,7 @@
                             </div>
                         </div>
                         
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="work_hours" class="form-label">ساعات العمل الإجمالية <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control @error('work_hours') is-invalid @enderror" 
-                                           id="work_hours" name="work_hours" value="{{ old('work_hours', 8) }}" 
-                                           min="1" step="0.5" required>
-                                    @error('work_hours')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                            
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="monthly_salary" class="form-label">الراتب الشهري <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control @error('monthly_salary') is-invalid @enderror" 
-                                           id="monthly_salary" name="monthly_salary" value="{{ old('monthly_salary') }}" 
-                                           step="0.01" min="0" required>
-                                    <div class="form-text">بالجنيه المصري</div>
-                                    @error('monthly_salary')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
+
                         
                         <!-- Custom Fields -->
                         @if($customFields && $customFields->count() > 0)
@@ -185,6 +160,66 @@
                             </div>
                         @endif
                         
+                        <!-- Entitlements Calculator -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="mb-0">حاسبة المستحقات</h5>
+                                    </div>
+                                    <div class="card-body" id="entitlements-section">
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <div class="mb-3">
+                                                    <label for="monthly_hours" class="form-label">عدد الساعات الشهرية</label>
+                                                    <input type="number" class="form-control" id="monthly_hours" value="208" step="0.01">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="mb-3">
+                                                    <label for="hourly_rate" class="form-label">سعر الساعة (جنيه)</label>
+                                                    <input type="number" class="form-control" id="hourly_rate" value="36.06" step="0.01">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="mb-3">
+                                                    <label for="days_worked" class="form-label">عدد الأيام المعمولة</label>
+                                                    <input type="number" class="form-control" id="days_worked" value="26" step="0.01">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="mb-3">
+                                                    <label for="monthly_days" class="form-label">عدد الأيام الشهرية</label>
+                                                    <input type="number" class="form-control" id="monthly_days" value="26" step="0.01">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="row mt-3">
+                                            <div class="col-md-6">
+                                                <div class="card bg-light">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title">الحساب بالساعات</h6>
+                                                        <p class="mb-0">إجمالي الراتب: <span id="total_by_hours" class="fw-bold">7,500.48 جنيه</span></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="card bg-light">
+                                                    <div class="card-body">
+                                                        <h6 class="card-title">الحساب بالراتب الكامل</h6>
+                                                        <p class="mb-0">إجمالي الراتب: <span id="total_by_salary" class="fw-bold">7,500.48 جنيه</span></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
                         <div class="d-flex justify-content-end gap-2">
                             <a href="{{ route('employees.index') }}" class="btn btn-secondary">إلغاء</a>
                             <button type="submit" class="btn btn-primary">
@@ -198,3 +233,97 @@
     </div>
 </div>
 @endsection
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Function to initialize event listeners with retry mechanism
+    function initializeEventListeners(retryCount = 0) {
+        try {
+            // Get input elements
+            const monthlyHoursInput = document.getElementById('monthly_hours');
+            const hourlyRateInput = document.getElementById('hourly_rate');
+            const daysWorkedInput = document.getElementById('days_worked');
+            const monthlyDaysInput = document.getElementById('monthly_days');
+
+            const employeeForm = document.getElementById('employee-form');
+            
+            // Check if all required elements exist
+            if (!monthlyHoursInput || !hourlyRateInput || !daysWorkedInput || !monthlyDaysInput) {
+                if (retryCount < 5) {
+                    setTimeout(() => initializeEventListeners(retryCount + 1), 500);
+                    return;
+                }
+                console.warn('Some entitlement calculator elements not found');
+                return;
+            }
+            
+            // Function to calculate entitlements
+            function calculateEntitlements() {
+                const monthlyHours = parseFloat(monthlyHoursInput.value) || 0;
+                const hourlyRate = parseFloat(hourlyRateInput.value) || 0;
+                const daysWorked = parseFloat(daysWorkedInput.value) || 0;
+                const monthlyDays = parseFloat(monthlyDaysInput.value) || 0;
+                
+                // Calculate by hours
+                const totalByHours = (daysWorked / monthlyDays) * monthlyHours * hourlyRate;
+                
+                // Calculate by full salary
+                const totalBySalary = monthlyHours * hourlyRate;
+                
+                // Update display - by hours
+                const totalByHoursEl = document.getElementById('total_by_hours');
+                
+                if (totalByHoursEl) totalByHoursEl.textContent = totalByHours.toFixed(2) + ' جنيه';
+                
+                // Update display - by salary
+                const totalBySalaryEl = document.getElementById('total_by_salary');
+                
+                if (totalBySalaryEl) totalBySalaryEl.textContent = totalBySalary.toFixed(2) + ' جنيه';
+            }
+            
+            // Add event listeners to all inputs
+            monthlyHoursInput.addEventListener('input', calculateEntitlements);
+            hourlyRateInput.addEventListener('input', calculateEntitlements);
+            daysWorkedInput.addEventListener('input', calculateEntitlements);
+            monthlyDaysInput.addEventListener('input', calculateEntitlements);
+            
+            // Initial calculation
+            calculateEntitlements();
+            
+
+            
+            // Add entitlements data to form before submission
+            if (employeeForm) {
+                employeeForm.addEventListener('submit', function(e) {
+                    // Add hidden inputs for entitlements data
+                    const entitlementsData = [
+                        { name: 'monthly_hours', value: monthlyHoursInput.value },
+                        { name: 'hourly_rate', value: hourlyRateInput.value },
+                        { name: 'days_worked', value: daysWorkedInput.value },
+                        { name: 'monthly_days', value: monthlyDaysInput.value },
+
+                    ];
+                    
+                    entitlementsData.forEach(function(data) {
+                        if (data.value) {
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = data.name;
+                            input.value = data.value;
+                            e.target.appendChild(input);
+                        }
+                    });
+                });
+            }
+        } catch (error) {
+            console.error('Error initializing entitlements calculator:', error);
+            if (retryCount < 5) {
+                setTimeout(() => initializeEventListeners(retryCount + 1), 1000);
+            }
+        }
+    }
+    
+    // Initialize event listeners
+    initializeEventListeners();
+});
+</script>

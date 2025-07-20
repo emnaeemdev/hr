@@ -22,7 +22,15 @@
                             <table class="table table-borderless">
                                 <tr>
                                     <th width="30%">الموظف:</th>
-                                    <td>{{ $employeeAdvance->employee->name ?? 'غير محدد' }}</td>
+                                    <td>
+                                        @if($employeeAdvance->employee)
+                                            <a href="{{ route('employees.show', $employeeAdvance->employee->id) }}" class="text-decoration-none">
+                                                {{ $employeeAdvance->employee->name }}
+                                            </a>
+                                        @else
+                                            غير محدد
+                                        @endif
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>المبلغ:</th>

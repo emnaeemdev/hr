@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -22,6 +23,8 @@ class Employee extends Model
         'address',
         'hire_date',
         'work_hours',
+        'working_days_month',
+        'hourly_rate',
         'monthly_salary',
         'salary',
         'has_advance',
@@ -35,6 +38,7 @@ class Employee extends Model
     protected $casts = [
         'hire_date' => 'date',
         'monthly_salary' => 'decimal:2',
+        'hourly_rate' => 'decimal:2',
         'has_advance' => 'boolean',
         'documents_complete' => 'boolean',
         'tools_received' => 'boolean',
@@ -93,6 +97,22 @@ class Employee extends Model
     }
 
     /**
+     * Get the entitlements for the employee.
+     */
+    public function entitlements()
+    {
+        return $this->hasMany(EmployeeEntitlement::class);
+    }
+
+    /**
+     * Get the latest entitlement for the employee.
+     */
+    public function latestEntitlement()
+    {
+        return $this->hasOne(EmployeeEntitlement::class)->latest();
+    }
+
+    /**
      * Get active advances for the employee.
      */
     public function activeAdvances(): HasMany
@@ -117,12 +137,32 @@ class Employee extends Model
     }
 
     /**
+     * Get monthly salary from latest entitlement or stored value.
+     */
+    public function getMonthlySalaryAttribute($value): float
+    {
+        // If we have a stored monthly salary, use it
+        if ($value && $value > 0) {
+            return (float) $value;
+        }
+        
+        // Otherwise, try to get from latest entitlement
+        $latestEntitlement = $this->latestEntitlement;
+        if ($latestEntitlement && $latestEntitlement->full_salary) {
+            return (float) $latestEntitlement->full_salary;
+        }
+        
+        return 0.0;
+    }
+
+    /**
      * Get net salary after deducting all advances.
      */
     public function getNetSalaryAttribute(): float
     {
         $totalAdvances = $this->getTotalRemainingAdvancesAttribute();
-        $netSalary = ($this->monthly_salary ?? 0) - $totalAdvances;
+        $monthlySalary = $this->monthly_salary; // This will use the accessor above
+        $netSalary = $monthlySalary - $totalAdvances;
         return max(0, $netSalary); // Ensure salary doesn't go negative
     }
 

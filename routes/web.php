@@ -32,6 +32,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/employees/{employee}/advances', [EmployeeController::class, 'advances'])->name('employees.advances');
     Route::get('/employees/{employee}/documents', [EmployeeController::class, 'documents'])->name('employees.documents');
     Route::get('/employees/{employee}/tools', [EmployeeController::class, 'tools'])->name('employees.tools');
+    Route::get('/employees/{employee}/print', [EmployeeController::class, 'print'])->name('employees.print');
+    Route::post('/employees/{employee}/save-entitlements', [EmployeeController::class, 'saveEntitlements'])->name('employees.save-entitlements');
     
     // Tool assignment routes
     Route::post('/employees/{employee}/assign-tool', [EmployeeController::class, 'assignTool'])->name('employees.assign-tool');
@@ -50,6 +52,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/api/employees/by-branch/{branch}', [EmployeeController::class, 'getByBranch'])->name('api.employees.by-branch');
     Route::get('/api/employees/search', [EmployeeController::class, 'search'])->name('api.employees.search');
     Route::get('/api/tools/available', [ToolController::class, 'getAvailable'])->name('api.tools.available');
+    Route::post('/api/employees/{employee}/entitlements', [EmployeeController::class, 'saveEntitlements'])->name('api.employees.entitlements');
     
     // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

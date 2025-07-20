@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use App\Models\Branch;
 use App\Models\CustomField;
+use App\Models\EmployeeEntitlement;
 use Illuminate\Http\Request;
 
 class EmployeeController extends Controller
@@ -111,6 +112,53 @@ class EmployeeController extends Controller
                     ]);
                 }
             }
+        }
+
+        // Save entitlements if provided
+        if ($request->has('monthly_hours') && $request->has('hourly_rate') && 
+            $request->has('days_worked') && $request->has('monthly_days')) {
+            
+            $monthlyHours = (float) $request->monthly_hours;
+            $hourlyRate = (float) $request->hourly_rate;
+            $daysWorked = (float) $request->days_worked;
+            $monthlyDays = (float) $request->monthly_days;
+            
+            $dailyHours = $monthlyHours / $monthlyDays;
+            $actualHours = $daysWorked * $dailyHours;
+            $entitlementsByHours = $actualHours * $hourlyRate;
+            
+            $fullSalary = $monthlyHours * $hourlyRate;
+            $dailySalary = $fullSalary / $monthlyDays;
+            $entitlementsBySalary = $dailySalary * $daysWorked;
+            
+            $totalAdvances = 0; // No advances for new employee
+            $netSalaryByHours = $entitlementsByHours;
+            $netSalaryBySalary = $entitlementsBySalary;
+            
+            // Update employee with calculated values
+            $employee->update([
+                'monthly_salary' => $fullSalary,
+                'hourly_rate' => $hourlyRate,
+                'work_hours' => $monthlyHours,
+                'working_days_month' => $monthlyDays
+            ]);
+            
+            $employee->entitlements()->create([
+                'monthly_hours' => $monthlyHours,
+                'monthly_days' => $monthlyDays,
+                'hourly_rate' => $hourlyRate,
+                'days_worked' => $daysWorked,
+                'daily_hours' => $dailyHours,
+                'actual_hours' => $actualHours,
+                'entitlements_by_hours' => $entitlementsByHours,
+                'full_salary' => $fullSalary,
+                'daily_salary' => $dailySalary,
+                'entitlements_by_salary' => $entitlementsBySalary,
+                'net_salary_by_hours' => $netSalaryByHours,
+                'net_salary_by_salary' => $netSalaryBySalary,
+                'total_advances' => $totalAdvances,
+                'notes' => $request->entitlements_notes
+            ]);
         }
 
         return redirect()->route('employees.index')
@@ -230,5 +278,92 @@ class EmployeeController extends Controller
             ->get();
         
         return response()->json($employees);
+    }
+
+    /**
+     * Display the print view for the specified employee
+     */
+    public function print(Employee $employee)
+    {
+        $employee->load('branch', 'advances', 'documents', 'assignedTools', 'customFieldValues.customField');
+        return view('employees.print', compact('employee'));
+    }
+
+    /**
+     * Save entitlements calculation results
+     */
+    public function saveEntitlements(Request $request, Employee $employee)
+    {
+        $request->validate([
+            'monthly_hours' => 'required|numeric|min:1',
+            'monthly_days' => 'required|numeric|min:1',
+            'hourly_rate' => 'required|numeric|min:0',
+            'days_worked' => 'required|numeric|min:1',
+            'net_salary_by_hours' => 'nullable|numeric|min:0',
+            'net_salary_by_salary' => 'nullable|numeric|min:0',
+            'total_advances' => 'nullable|numeric|min:0',
+            'notes' => 'nullable|string'
+        ]);
+
+        // Calculate values
+        $monthlyHours = (float) $request->monthly_hours;
+        $hourlyRate = (float) $request->hourly_rate;
+        $daysWorked = (float) $request->days_worked;
+        $monthlyDays = (float) $request->monthly_days;
+        
+        $dailyHours = $monthlyHours / $monthlyDays;
+        $actualHours = $daysWorked * $dailyHours;
+        $entitlementsByHours = $actualHours * $hourlyRate;
+        
+        $fullSalary = $monthlyHours * $hourlyRate;
+        $dailySalary = $fullSalary / $monthlyDays;
+        $entitlementsBySalary = $dailySalary * $daysWorked;
+
+        // Get net salary and total advances from request
+        $netSalaryByHours = (float) ($request->net_salary_by_hours ?? $entitlementsByHours);
+        $netSalaryBySalary = (float) ($request->net_salary_by_salary ?? $entitlementsBySalary);
+        $totalAdvances = (float) ($request->total_advances ?? 0);
+
+        // Update employee with calculated values
+        $employee->update([
+            'monthly_salary' => $fullSalary,
+            'hourly_rate' => $hourlyRate,
+            'work_hours' => $monthlyHours,
+            'working_days_month' => $monthlyDays
+        ]);
+
+        // Create new entitlements record
+        $entitlement = $employee->entitlements()->create([
+            'monthly_hours' => $monthlyHours,
+            'monthly_days' => $monthlyDays,
+            'hourly_rate' => $hourlyRate,
+            'days_worked' => $daysWorked,
+            'daily_hours' => $dailyHours,
+            'actual_hours' => $actualHours,
+            'entitlements_by_hours' => $entitlementsByHours,
+            'full_salary' => $fullSalary,
+            'daily_salary' => $dailySalary,
+            'entitlements_by_salary' => $entitlementsBySalary,
+            'net_salary_by_hours' => $netSalaryByHours,
+            'net_salary_by_salary' => $netSalaryBySalary,
+            'total_advances' => $totalAdvances,
+            'notes' => $request->notes
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'تم حفظ نتائج حاسبة المستحقات بنجاح',
+            'data' => [
+                'daily_hours' => number_format($dailyHours, 2),
+                'actual_hours' => number_format($actualHours, 2),
+                'entitlements_by_hours' => number_format($entitlementsByHours, 2),
+                'full_salary' => number_format($fullSalary, 2),
+                'daily_salary' => number_format($dailySalary, 2),
+                'entitlements_by_salary' => number_format($entitlementsBySalary, 2),
+                'net_salary_by_hours' => number_format($netSalaryByHours, 2),
+                'net_salary_by_salary' => number_format($netSalaryBySalary, 2),
+                'total_advances' => number_format($totalAdvances, 2)
+            ]
+        ]);
     }
 }
