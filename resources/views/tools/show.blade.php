@@ -49,7 +49,7 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label class="form-label fw-bold">سعر الشراء:</label>
-                                <p class="form-control-plaintext">{{ $tool->purchase_price ? number_format($tool->purchase_price, 2) . ' جنيه' : 'غير محدد' }}</p>
+                                <p class="form-control-plaintext">{{ $tool->purchase_price ? number_format($tool->purchase_price, 0) . ' جنيه' : 'غير محدد' }}</p>
                             </div>
                         </div>
                     </div>

@@ -196,7 +196,7 @@
                                 <a href="{{ route('employee-advances.show', $advance->id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center text-decoration-none">
                                     <div>
                                         <h6 class="mb-1 text-dark">{{ $advance->employee->name ?? 'غير محدد' }}</h6>
-                                        <p class="mb-1 text-dark">{{ number_format($advance->amount, 2) }} جنيه</p>
+                                        <p class="mb-1 text-dark">{{ number_format($advance->amount, 0) }} جنيه</p>
                                         <small class="text-muted">{{ $advance->reason }}</small>
                                     </div>
                                     <div class="text-end">

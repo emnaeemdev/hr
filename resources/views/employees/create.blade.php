@@ -273,12 +273,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Update display - by hours
                 const totalByHoursEl = document.getElementById('total_by_hours');
                 
-                if (totalByHoursEl) totalByHoursEl.textContent = totalByHours.toFixed(2) + ' جنيه';
+                if (totalByHoursEl) totalByHoursEl.textContent = Math.round(totalByHours) + ' جنيه';
                 
                 // Update display - by salary
                 const totalBySalaryEl = document.getElementById('total_by_salary');
                 
-                if (totalBySalaryEl) totalBySalaryEl.textContent = totalBySalary.toFixed(2) + ' جنيه';
+                if (totalBySalaryEl) totalBySalaryEl.textContent = Math.round(totalBySalary) + ' جنيه';
             }
             
             // Add event listeners to all inputs

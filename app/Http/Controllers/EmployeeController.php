@@ -354,15 +354,15 @@ class EmployeeController extends Controller
             'success' => true,
             'message' => 'تم حفظ نتائج حاسبة المستحقات بنجاح',
             'data' => [
-                'daily_hours' => number_format($dailyHours, 2),
-                'actual_hours' => number_format($actualHours, 2),
-                'entitlements_by_hours' => number_format($entitlementsByHours, 2),
-                'full_salary' => number_format($fullSalary, 2),
-                'daily_salary' => number_format($dailySalary, 2),
-                'entitlements_by_salary' => number_format($entitlementsBySalary, 2),
-                'net_salary_by_hours' => number_format($netSalaryByHours, 2),
-                'net_salary_by_salary' => number_format($netSalaryBySalary, 2),
-                'total_advances' => number_format($totalAdvances, 2)
+                'daily_hours' => number_format($dailyHours, 0),
+                'actual_hours' => number_format($actualHours, 0),
+                'entitlements_by_hours' => number_format($entitlementsByHours, 0),
+                'full_salary' => number_format($fullSalary, 0),
+                'daily_salary' => number_format($dailySalary, 0),
+                'entitlements_by_salary' => number_format($entitlementsBySalary, 0),
+                'net_salary_by_hours' => number_format($netSalaryByHours, 0),
+                'net_salary_by_salary' => number_format($netSalaryBySalary, 0),
+                'total_advances' => number_format($totalAdvances, 0)
             ]
         ]);
     }
