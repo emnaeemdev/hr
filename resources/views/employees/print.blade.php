@@ -536,12 +536,12 @@
                         </div>
                         <div class="calc-item calc-result">
                             <div class="calc-label">المستحقات</div>
-                            <div class="calc-value">{{ number_format(round($savedEntitlementsByHours), 0, '.', ',') }} جنيه</div>
+                            <div class="calc-value">{{ number_format(round($savedEntitlementsByHours / 10) * 10, 0, '.', ',') }} جنيه</div>
                 <div class="calc-formula">{{ number_format($savedActualHours, 0, '.', ',') }} × {{ $savedHourlyRate }}</div>
                         </div>
                         <div class="calc-item calc-result">
                             <div class="calc-label">الراتب الصافي</div>
-                            <div class="calc-value">{{ number_format(round($savedNetSalaryByHours), 0, '.', ',') }} جنيه</div>
+                            <div class="calc-value">{{ number_format(round($savedNetSalaryByHours / 10) * 10, 0, '.', ',') }} جنيه</div>
                 <div class="calc-formula">بعد خصم السلف ({{ number_format($savedTotalAdvances, 0, '.', ',') }} جنيه)</div>
                         </div>
                     </div>
@@ -563,12 +563,12 @@
                         </div>
                         <div class="calc-item calc-result">
                             <div class="calc-label">المستحقات</div>
-                            <div class="calc-value">{{ number_format(round($savedEntitlementsBySalary), 0, '.', ',') }} جنيه</div>
+                            <div class="calc-value">{{ number_format(round($savedEntitlementsBySalary / 10) * 10, 0, '.', ',') }} جنيه</div>
                 <div class="calc-formula">{{ number_format($savedDailySalary, 0, '.', ',') }} × {{ $savedDaysWorked }}</div>
                         </div>
                         <div class="calc-item calc-result">
                             <div class="calc-label">الراتب الصافي</div>
-                            <div class="calc-value">{{ number_format(round($savedNetSalaryBySalary), 0, '.', ',') }} جنيه</div>
+                            <div class="calc-value">{{ number_format(round($savedNetSalaryBySalary / 10) * 10, 0, '.', ',') }} جنيه</div>
                 <div class="calc-formula">بعد خصم السلف ({{ number_format($savedTotalAdvances, 0, '.', ',') }} جنيه)</div>
                         </div>
                     </div>
