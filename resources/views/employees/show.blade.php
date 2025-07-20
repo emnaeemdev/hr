@@ -531,7 +531,7 @@ if (netSalaryDisplay) {
             monthlySalaryCell.innerHTML = new Intl.NumberFormat('en-US', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
-            }).format(Math.ceil(fullSalary)) + ' جنيه <small class="text-muted">(' + monthlyHours + ' ساعة × ' + hourlyRate + ' جنيه)</small>';
+            }).format(Math.round(fullSalary)) + ' جنيه <small class="text-muted">(' + monthlyHours + ' ساعة × ' + hourlyRate + ' جنيه)</small>';
         }
     }
     
