@@ -34,11 +34,11 @@
                                 </tr>
                                 <tr>
                                     <th>المبلغ:</th>
-                                    <td>{{ number_format($employeeAdvance->amount, 0) }} جنيه</td>
+                                    <td>{{ number_format($employeeAdvance->amount, 0, '.', ',') }} جنيه</td>
                                 </tr>
                                 <tr>
                                     <th>المبلغ المتبقي:</th>
-                                    <td>{{ number_format($employeeAdvance->remaining_amount, 0) }} جنيه</td>
+                                    <td>{{ number_format($employeeAdvance->remaining_amount, 0, '.', ',') }} جنيه</td>
                                 </tr>
                             </table>
                         </div>

@@ -284,10 +284,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const totalBySalary = monthlyHours * hourlyRate;
         
         // Update display - by hours
-        document.getElementById('total_by_hours').textContent = Math.round(totalByHours) + ' جنيه';
+        document.getElementById('total_by_hours').textContent = Math.ceil(totalByHours) + ' جنيه';
         
         // Update display - by salary
-        document.getElementById('total_by_salary').textContent = Math.round(totalBySalary) + ' جنيه';
+        document.getElementById('total_by_salary').textContent = Math.ceil(totalBySalary) + ' جنيه';
     }
     
     // Add event listeners to all inputs

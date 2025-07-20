@@ -510,12 +510,12 @@ function autoSaveEntitlements() {
     const netSalaryBySalary = Math.max(0, entitlementsBySalary - totalAdvances);
     
     // Update the net salary display in employee details
-    if (netSalaryDisplay) {
-        netSalaryDisplay.innerHTML = new Intl.NumberFormat('ar-EG', {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0
-        }).format(netSalaryBySalary) + ' جنيه';
-    }
+if (netSalaryDisplay) {
+    netSalaryDisplay.innerHTML = new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(Math.ceil(netSalaryBySalary)) + ' جنيه';
+}
     
     // Update monthly salary display
     const thElements = document.querySelectorAll('th');
@@ -528,10 +528,10 @@ function autoSaveEntitlements() {
     if (monthlySalaryRow) {
         const monthlySalaryCell = monthlySalaryRow.querySelector('td');
         if (monthlySalaryCell) {
-            monthlySalaryCell.innerHTML = new Intl.NumberFormat('ar-EG', {
+            monthlySalaryCell.innerHTML = new Intl.NumberFormat('en-US', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
-            }).format(fullSalary) + ' جنيه <small class="text-muted">(' + monthlyHours + ' ساعة × ' + hourlyRate + ' جنيه)</small>';
+            }).format(Math.ceil(fullSalary)) + ' جنيه <small class="text-muted">(' + monthlyHours + ' ساعة × ' + hourlyRate + ' جنيه)</small>';
         }
     }
     
@@ -618,46 +618,64 @@ function updateCalculatorResults(values) {
         // Update entitlements and net salary displays
         const successElements = calculatorSection.querySelectorAll('.text-success.fw-bold');
         if (successElements[0]) {
-            successElements[0].textContent = new Intl.NumberFormat('ar-EG', {
+            successElements[0].textContent = new Intl.NumberFormat('en-US', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
-            }).format(Math.round(values.entitlementsByHours)) + ' جنيه';
+            }).format(Math.ceil(values.entitlementsByHours)) + ' جنيه';
         }
         if (successElements[1]) {
-            successElements[1].textContent = new Intl.NumberFormat('ar-EG', {
+            successElements[1].textContent = new Intl.NumberFormat('en-US', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
-            }).format(Math.round(values.entitlementsBySalary)) + ' جنيه';
+            }).format(Math.ceil(Math.max(0, values.entitlementsBySalary - values.totalAdvances))) + ' جنيه';
         }
         
         const infoElements = calculatorSection.querySelectorAll('.text-info.fw-bold');
         if (infoElements[0]) {
-            infoElements[0].textContent = new Intl.NumberFormat('ar-EG', {
+            infoElements[0].textContent = new Intl.NumberFormat('en-US', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
-            }).format(Math.round(values.netSalaryByHours)) + ' جنيه';
+            }).format(Math.ceil(values.netSalaryByHours)) + ' جنيه';
         }
         if (infoElements[1]) {
-            infoElements[1].textContent = new Intl.NumberFormat('ar-EG', {
+            infoElements[1].textContent = new Intl.NumberFormat('en-US', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
-            }).format(Math.round(values.netSalaryBySalary)) + ' جنيه';
+            }).format(Math.ceil(values.netSalaryBySalary)) + ' جنيه';
         }
         
         // Update warning elements (full salary and daily salary)
         const warningElements = calculatorSection.querySelectorAll('.text-warning');
         if (warningElements[0]) {
-            warningElements[0].textContent = new Intl.NumberFormat('ar-EG', {
+            warningElements[0].textContent = new Intl.NumberFormat('en-US', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
-            }).format(Math.round(values.fullSalary)) + ' جنيه';
+            }).format(Math.ceil(values.fullSalary)) + ' جنيه';
         }
         if (warningElements[1]) {
-            warningElements[1].textContent = new Intl.NumberFormat('ar-EG', {
+            warningElements[1].textContent = new Intl.NumberFormat('en-US', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
             }).format(Math.round(values.dailySalary)) + ' جنيه';
         }
+    }
+    
+    // Update the net salary display outside the calculator
+    const netSalaryDisplay = document.getElementById('net-salary-display');
+    if (netSalaryDisplay) {
+        netSalaryDisplay.textContent = new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(Math.ceil(Math.max(0, values.entitlementsBySalary - values.totalAdvances))) + ' جنيه';
+    }
+    
+    // Update the entitlements by salary display in the calculator
+    const entitlementsBySalaryDisplay = document.getElementById('entitlements-by-salary-display');
+    if (entitlementsBySalaryDisplay) {
+        entitlementsBySalaryDisplay.textContent = new Intl.NumberFormat('en-US', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(Math.ceil(Math.max(0, values.entitlementsBySalary - values.totalAdvances))) + ' جنيه';
     }
 }
 
@@ -810,13 +828,13 @@ function showErrorMessage(error) {
                                             $hourlyRate = (float) request('hourly_rate', 36.06);
                                             $fullSalary = $monthlyHours * $hourlyRate;
                                         @endphp
-                                        {{ number_format($fullSalary, 0) }} جنيه
-                                        <small class="text-muted">({{ $monthlyHours }} ساعة × {{ number_format($hourlyRate, 0) }} جنيه)</small>
+                                        {{ number_format(ceil($fullSalary), 0, '.', ',') }} جنيه
+                                        <small class="text-muted">({{ number_format($monthlyHours, 0, '.', ',') }} ساعة × {{ number_format($hourlyRate, 0, '.', ',') }} جنيه)</small>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>إجمالي السلف:</th>
-                                    <td class="text-danger">{{ number_format($employee->total_remaining_advances, 0) }} جنيه</td>
+                                    <td class="text-danger">{{ number_format($employee->total_remaining_advances, 0, '.', ',') }} جنيه</td>
                                 </tr>
                                 <tr>
                                     <th>الراتب الصافي:</th>
@@ -839,8 +857,10 @@ function showErrorMessage(error) {
                                             $totalAdvances = $employee->advances->where('status', '!=', 'rejected')->sum('remaining_amount');
                                             $netSalary = max(0, $entitlementsBySalary - $totalAdvances);
                                         @endphp
-                                        {{ number_format($netSalary, 0) }} جنيه
+                                              {{ number_format(ceil($netSalary), 0, '.', ',') }} جنيه
+
                                     </td>
+                                    
                                 </tr>
                             </table>
                         </div>
@@ -895,12 +915,7 @@ function showErrorMessage(error) {
             <div class="card mb-4 avoid-break screen-only" id="entitlements-section">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0"><i class="fas fa-calculator"></i> حاسبة المستحقات</h5>
-                    <div class="screen-only">
-                        <button onclick="downloadPDF()" class="btn btn-info btn-sm">
-                            <i class="fas fa-download"></i> تحميل PDF
-                        </button>
                     </div>
-                </div>
                 <div class="card-body">
                     @php
                         // Get latest saved entitlement values or use defaults
@@ -973,56 +988,43 @@ function showErrorMessage(error) {
                         $netSalaryBySalary = max(0, $entitlementsBySalary - $totalAdvances);
                     @endphp
                     
-                    <!-- نتائج الحساب -->
-                    <div class="alert alert-info">
-                        <h6><i class="fas fa-calculator"></i> نتائج الحساب:</h6>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-2">
-                                    <strong>ساعات اليوم الواحد:</strong>
-                                    <span class="text-primary fw-bold">{{ number_format($dailyHours, 0) }} ساعة</span>
-                                </div>
-                                <div class="mb-2">
-                                    <strong>إجمالي الساعات الفعلية:</strong>
-                                    <span class="text-primary fw-bold">{{ number_format($actualHours, 0) }} ساعة</span>
-                                </div>
-                                <div class="mb-2">
-                                    <strong>المستحقات (بالساعات):</strong>
-                                    <span class="text-success fw-bold">{{ number_format($entitlementsByHours, 0) }} جنيه</span>
-                                </div>
-                                <div class="mb-2">
-                                    <strong>الراتب الصافي (بالساعات):</strong>
-                                    <span class="text-warning fw-bold">{{ number_format($netSalaryByHours, 0) }} جنيه</span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-2">
-                                    <strong>الراتب الشهري الكامل:</strong>
-                                    <span class="text-primary fw-bold">{{ number_format($fullSalary, 0) }} جنيه</span>
-                                </div>
-                                <div class="mb-2">
-                                    <strong>راتب اليوم الواحد:</strong>
-                                    <span class="text-primary fw-bold">{{ number_format($dailySalary, 0) }} جنيه</span>
-                                </div>
-                                <div class="mb-2">
-                                    <strong>المستحقات (بالراتب):</strong>
-                                    <span class="text-success fw-bold">{{ number_format($entitlementsBySalary, 0) }} جنيه</span>
-                                </div>
-                                <div class="mb-2">
-                                    <strong>الراتب الصافي (بالراتب):</strong>
-                                    <span class="text-warning fw-bold">{{ number_format($netSalaryBySalary, 0) }} جنيه</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row mt-2">
-                            <div class="col-12">
-                                <div class="mb-2">
-                                    <strong>إجمالي السلف المتبقية:</strong>
-                                    <span class="text-danger fw-bold">{{ number_format($totalAdvances, 0) }} جنيه</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                  <!-- نتائج الحساب -->
+<div class="alert alert-info">
+    <h6><i class="fas fa-calculator"></i> نتائج الحساب:</h6>
+    <div class="row">
+        <!-- العمود الأيسر -->
+        <div class="col-md-6">
+            <div class="mb-2">
+                <strong>ساعات اليوم الواحد:</strong>
+                <span class="text-primary fw-bold">{{ number_format($dailyHours, 0, '.', ',') }} ساعة</span>
+            </div>
+            <div class="mb-2">
+                <strong>إجمالي الساعات الفعلية:</strong>
+                <span class="text-primary fw-bold">{{ number_format($actualHours, 0, '.', ',') }} ساعة</span>
+            </div>
+            <div class="mb-2">
+                <strong>راتب اليوم الواحد:</strong>
+                <span class="text-primary fw-bold">{{ number_format($dailySalary, 0, '.', ',') }} جنيه</span>
+            </div>
+        </div>
+
+        <!-- العمود الأيمن -->
+        <div class="col-md-6">
+            <div class="mb-2">
+                <strong>الراتب الشهري الكامل:</strong>
+                <span class="text-primary fw-bold">{{ number_format(ceil($fullSalary), 0, '.', ',') }} جنيه</span>
+            </div>
+            <div class="mb-2">
+                <strong>إجمالي السلف المتبقية:</strong>
+                <span class="text-danger fw-bold">{{ number_format($totalAdvances, 0, '.', ',') }} جنيه</span>
+            </div>
+            <div class="mb-2">
+                <strong>المستحقات (بالراتب):</strong>
+                <span class="text-success fw-bold" id="entitlements-by-salary-display">{{ number_format(ceil(max(0, $entitlementsBySalary - $totalAdvances)), 0, '.', ',') }} جنيه</span>
+            </div>
+        </div>
+    </div>
+</div>
 
                     <!-- Save Entitlements Section -->
                     <div class="row mt-3 screen-only">
@@ -1071,8 +1073,8 @@ function showErrorMessage(error) {
                                 <tbody>
                                     @foreach($employee->advances as $advance)
                                         <tr>
-                                            <td>{{ number_format($advance->amount, 0) }} جنيه</td>
-                    <td>{{ number_format($advance->remaining_amount, 0) }} جنيه</td>
+                                            <td>{{ number_format($advance->amount, 0, '.', ',') }} جنيه</td>
+                    <td>{{ number_format($advance->remaining_amount, 0, '.', ',') }} جنيه</td>
                                             <td>{{ $advance->request_date->format('Y-m-d') }}</td>
                                             <td>{{ $advance->reason ?? 'غير محدد' }}</td>
                                             <td>

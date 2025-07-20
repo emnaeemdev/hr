@@ -102,9 +102,9 @@
                                         <td>{{ $employee->branch->name ?? 'غير محدد' }}</td>
                                         <td>{{ $employee->position ?? 'غير محدد' }}</td>
                                         <td>{{ $employee->work_hours ?? 8 }} ساعة</td>
-                                        <td>{{ $employee->monthly_salary ? number_format($employee->monthly_salary, 0) : '0' }} جنيه</td>
-                    <td class="text-danger">{{ number_format($employee->total_remaining_advances, 0) }} جنيه</td>
-                    <td class="text-success fw-bold">{{ number_format($employee->net_salary, 0) }} جنيه</td>
+                                        <td>{{ $employee->monthly_salary ? number_format(ceil($employee->monthly_salary), 0, '.', ',') : '0' }} جنيه</td>
+                    <td class="text-danger">{{ number_format($employee->total_remaining_advances, 0, '.', ',') }} جنيه</td>
+                    <td class="text-success fw-bold">{{ number_format(ceil($employee->net_salary), 0, '.', ',') }} جنيه</td>
                                         <td class="text-center">
                                             @php
                                                 $assignedToolsCount = \App\Models\Tool::where('assigned_employee_id', $employee->id)->where('status', 'assigned')->count();

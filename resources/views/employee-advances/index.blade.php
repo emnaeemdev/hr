@@ -80,9 +80,9 @@
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $advance->employee->name ?? 'غير محدد' }}</td>
-                                        <td>{{ number_format($advance->amount ?? 0, 0) }} جنيه</td>
-                    <td>{{ number_format($advance->paid_amount ?? 0, 0) }} جنيه</td>
-                    <td>{{ number_format(($advance->amount ?? 0) - ($advance->paid_amount ?? 0), 0) }} جنيه</td>
+                                        <td>{{ number_format($advance->amount ?? 0, 0, '.', ',') }} جنيه</td>
+                    <td>{{ number_format($advance->paid_amount ?? 0, 0, '.', ',') }} جنيه</td>
+                    <td>{{ number_format(($advance->amount ?? 0) - ($advance->paid_amount ?? 0), 0, '.', ',') }} جنيه</td>
                                         <td>
                                             @if(($advance->status ?? 'pending') == 'pending')
                                                 <span class="badge bg-warning">قيد الانتظار</span>
