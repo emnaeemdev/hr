@@ -450,7 +450,7 @@
                     $savedActualHours = $savedDaysWorked * $savedDailyHours;
                     $savedEntitlementsByHours = $savedActualHours * $savedHourlyRate;
                     
-                    $savedFullSalary = $savedMonthlyHours * $savedHourlyRate;
+                    $savedFullSalary = round(($savedMonthlyHours * $savedHourlyRate) / 10) * 10;
                     $savedDailySalary = $savedFullSalary / $savedMonthlyDays;
                     $savedEntitlementsBySalary = $savedDailySalary * $savedDaysWorked;
                     

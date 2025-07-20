@@ -127,7 +127,7 @@ class EmployeeController extends Controller
             $actualHours = $daysWorked * $dailyHours;
             $entitlementsByHours = $actualHours * $hourlyRate;
             
-            $fullSalary = $monthlyHours * $hourlyRate;
+            $fullSalary = round(($monthlyHours * $hourlyRate) / 10) * 10;
             $dailySalary = $fullSalary / $monthlyDays;
             $entitlementsBySalary = $dailySalary * $daysWorked;
             
@@ -315,7 +315,7 @@ class EmployeeController extends Controller
         $actualHours = $daysWorked * $dailyHours;
         $entitlementsByHours = $actualHours * $hourlyRate;
         
-        $fullSalary = $monthlyHours * $hourlyRate;
+        $fullSalary = round(($monthlyHours * $hourlyRate) / 10) * 10;
         $dailySalary = $fullSalary / $monthlyDays;
         $entitlementsBySalary = $dailySalary * $daysWorked;
 

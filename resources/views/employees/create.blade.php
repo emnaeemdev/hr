@@ -268,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const totalByHours = (daysWorked / monthlyDays) * monthlyHours * hourlyRate;
                 
                 // Calculate by full salary
-                const totalBySalary = monthlyHours * hourlyRate;
+                const totalBySalary = Math.round((monthlyHours * hourlyRate) / 10) * 10;
                 
                 // Update display - by hours
                 const totalByHoursEl = document.getElementById('total_by_hours');

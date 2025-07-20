@@ -281,7 +281,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const totalByHours = (daysWorked / monthlyDays) * monthlyHours * hourlyRate;
         
         // Calculate by full salary
-        const totalBySalary = monthlyHours * hourlyRate;
+        const totalBySalary = Math.round((monthlyHours * hourlyRate) / 10) * 10;
         
         // Update display - by hours
         document.getElementById('total_by_hours').textContent = Math.round(totalByHours) + ' جنيه';
@@ -323,7 +323,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const actualHours = daysWorked * dailyHours;
         const entitlementsByHours = actualHours * hourlyRate;
         
-        const fullSalary = monthlyHours * hourlyRate;
+        const fullSalary = Math.round((monthlyHours * hourlyRate) / 10) * 10;
         const dailySalary = monthlyDays > 0 ? fullSalary / monthlyDays : 0;
         const entitlementsBySalary = daysWorked * dailySalary;
         

@@ -498,7 +498,7 @@ function autoSaveEntitlements() {
     const actualHours = daysWorked * dailyHours;
     const entitlementsByHours = actualHours * hourlyRate;
     
-    const fullSalary = monthlyHours * hourlyRate;
+    const fullSalary = Math.round((monthlyHours * hourlyRate) / 10) * 10;
     const dailySalary = monthlyDays > 0 ? fullSalary / monthlyDays : 0;
     const entitlementsBySalary = daysWorked * dailySalary;
     
@@ -531,7 +531,7 @@ if (netSalaryDisplay) {
             monthlySalaryCell.innerHTML = new Intl.NumberFormat('en-US', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
-            }).format(Math.round(fullSalary)) + ' جنيه <small class="text-muted">(' + monthlyHours + ' ساعة × ' + hourlyRate + ' جنيه)</small>';
+            }).format(Math.round(fullSalary / 10) * 10) + ' جنيه <small class="text-muted">(' + monthlyHours + ' ساعة × ' + hourlyRate + ' جنيه)</small>';
         }
     }
     
@@ -650,7 +650,7 @@ function updateCalculatorResults(values) {
             warningElements[0].textContent = new Intl.NumberFormat('en-US', {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
-            }).format(Math.round(values.fullSalary)) + ' جنيه';
+            }).format(Math.round(values.fullSalary / 10) * 10) + ' جنيه';
         }
         if (warningElements[1]) {
             warningElements[1].textContent = new Intl.NumberFormat('en-US', {
@@ -826,9 +826,9 @@ function showErrorMessage(error) {
                                         @php
                                             $monthlyHours = (float) request('monthly_hours', 208);
                                             $hourlyRate = (float) request('hourly_rate', 36.06);
-                                            $fullSalary = $monthlyHours * $hourlyRate;
+                                            $fullSalary = round(($monthlyHours * $hourlyRate) / 10) * 10;
                                         @endphp
-                                        {{ number_format(round($fullSalary), 0, '.', ',') }} جنيه
+                                        {{ number_format(round($fullSalary / 10) * 10, 0, '.', ',') }} جنيه
                                         <small class="text-muted">({{ number_format($monthlyHours, 0, '.', ',') }} ساعة × {{ number_format($hourlyRate, 0, '.', ',') }} جنيه)</small>
                                     </td>
                                 </tr>
@@ -851,7 +851,7 @@ function showErrorMessage(error) {
                                             $daysWorked = (float) request('days_worked', $defaultDaysWorked);
                                             $monthlyDays = (float) request('monthly_days', $defaultMonthlyDays);
                                             
-                                            $fullSalary = $monthlyHours * $hourlyRate;
+                                            $fullSalary = round(($monthlyHours * $hourlyRate) / 10) * 10;
                                             $dailySalary = $monthlyDays > 0 ? $fullSalary / $monthlyDays : 0;
                                             $entitlementsBySalary = $daysWorked * $dailySalary;
                                             $totalAdvances = $employee->advances->where('status', '!=', 'rejected')->sum('remaining_amount');
@@ -976,7 +976,7 @@ function showErrorMessage(error) {
                         $entitlementsByHours = $actualHours * $hourlyRate;
                         
                         // الطريقة الثانية: حساب بالراتب الكامل
-                        $fullSalary = $monthlyHours * $hourlyRate;
+                        $fullSalary = round(($monthlyHours * $hourlyRate) / 10) * 10;
                         $dailySalary = $monthlyDays > 0 ? $fullSalary / $monthlyDays : 0;
                         $entitlementsBySalary = $daysWorked * $dailySalary;
                         
