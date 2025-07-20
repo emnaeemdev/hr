@@ -529,8 +529,8 @@ function autoSaveEntitlements() {
         const monthlySalaryCell = monthlySalaryRow.querySelector('td');
         if (monthlySalaryCell) {
             monthlySalaryCell.innerHTML = new Intl.NumberFormat('ar-EG', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
             }).format(fullSalary) + ' جنيه <small class="text-muted">(' + monthlyHours + ' ساعة × ' + hourlyRate + ' جنيه)</small>';
         }
     }
