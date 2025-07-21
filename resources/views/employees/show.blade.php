@@ -596,6 +596,47 @@ if (netSalaryDisplay) {
     });
 }
 
+// Function to update calculator display without auto-saving
+function updateCalculatorDisplay() {
+    const monthlyHours = parseFloat(document.getElementById('monthly_hours').value) || 0;
+    const hourlyRate = parseFloat(document.getElementById('hourly_rate').value) || 0;
+    const daysWorked = parseFloat(document.getElementById('days_worked').value) || 0;
+    const monthlyDays = parseFloat(document.getElementById('monthly_days').value) || 0;
+    
+    // Calculate values
+    const dailyHours = monthlyDays > 0 ? monthlyHours / monthlyDays : 0;
+    const actualHours = daysWorked * dailyHours;
+    const entitlementsByHours = actualHours * hourlyRate;
+    
+    const fullSalary = Math.round((monthlyHours * hourlyRate) / 10) * 10;
+    const dailySalary = monthlyDays > 0 ? fullSalary / monthlyDays : 0;
+    const entitlementsBySalary = daysWorked * dailySalary;
+    
+    // Get total advances from the page
+    const totalAdvancesText = document.querySelector('td.text-danger').textContent;
+    const totalAdvances = parseFloat(totalAdvancesText.replace(/[^\d.-]/g, '')) || 0;
+    
+    const netSalaryByHours = Math.max(0, entitlementsByHours - totalAdvances);
+    const netSalaryBySalary = Math.max(0, entitlementsBySalary - totalAdvances);
+    
+    // Update calculator results display only
+    updateCalculatorResults({
+        dailyHours,
+        actualHours,
+        entitlementsByHours,
+        fullSalary,
+        dailySalary,
+        entitlementsBySalary,
+        netSalaryByHours,
+        netSalaryBySalary,
+        totalAdvances,
+        monthlyHours,
+        hourlyRate,
+        daysWorked,
+        monthlyDays
+    });
+}
+
 function updateCalculatorResults(values) {
     // Update first method results
     const dailyHoursSpan = document.querySelector('.text-primary');
@@ -658,6 +699,13 @@ function updateCalculatorResults(values) {
                 maximumFractionDigits: 0
             }).format(Math.round(values.dailySalary)) + ' جنيه';
         }
+        const dailySalaryDisplay = document.getElementById('daily-salary-display');
+if (dailySalaryDisplay) {
+    dailySalaryDisplay.textContent = new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(Math.round(values.dailySalary)) + ' جنيه';
+}
     }
     
     // Update the net salary display outside the calculator
@@ -677,6 +725,24 @@ function updateCalculatorResults(values) {
             maximumFractionDigits: 0
         }).format(Math.round(Math.max(0, values.entitlementsBySalary - values.totalAdvances))) + ' جنيه';
     }
+    const fullSalaryDisplay = document.getElementById('full-salary-display');
+const fullSalaryDisplays = document.querySelectorAll('.full-salary-display');
+fullSalaryDisplays.forEach(element => {
+    element.textContent = new Intl.NumberFormat('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    }).format(Math.round(values.fullSalary / 10) * 10) + ' جنيه';
+});
+const entBox = document.getElementById('entitlements-by-salary-box');
+const entTable = document.getElementById('entitlements-by-salary-table');
+
+const formattedEntitlements = new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+}).format(Math.round(values.entitlementsBySalary)) + ' جنيه';
+
+if (entBox) entBox.textContent = formattedEntitlements;
+if (entTable) entTable.textContent = formattedEntitlements;
 }
 
 // Add event listeners for auto-update and page reload
@@ -689,11 +755,10 @@ function initializeEventListeners() {
             const input = document.getElementById(inputId);
             if (input) {
                 foundInputs++;
-                // Add multiple event types for better responsiveness
-                input.addEventListener('input', autoSaveEntitlements);
-                input.addEventListener('change', handleInputChange);
-                input.addEventListener('keyup', autoSaveEntitlements);
-                input.addEventListener('blur', handleInputChange);
+                // Remove auto-save listeners, only keep calculation update
+                input.addEventListener('input', updateCalculatorDisplay);
+                input.addEventListener('change', updateCalculatorDisplay);
+                input.addEventListener('keyup', updateCalculatorDisplay);
             } else {
                 console.warn('Input element not found:', inputId);
             }
@@ -702,7 +767,7 @@ function initializeEventListeners() {
         if (foundInputs === inputs.length) {
             console.log('All input elements found and listeners added');
             // Call once on page load to ensure initial calculation
-            setTimeout(autoSaveEntitlements, 200);
+            setTimeout(updateCalculatorDisplay, 200);
         } else {
             console.warn('Not all input elements found, retrying in 500ms');
             setTimeout(initializeEventListeners, 500);
@@ -713,37 +778,121 @@ function initializeEventListeners() {
     }
 }
 
-// Handle input change with page reload
-function handleInputChange() {
-    // Save the entitlements first
-    autoSaveEntitlements();
-    
-    // Show loading message
-    const alertDiv = document.createElement('div');
-    alertDiv.className = 'alert alert-info alert-dismissible fade show';
-    alertDiv.innerHTML = `
-        <i class="fas fa-sync-alt fa-spin"></i> جاري تحديث البيانات...
-    `;
-    
-    const entitlementsSection = document.getElementById('entitlements-section');
-    if (entitlementsSection) {
-        entitlementsSection.parentNode.insertBefore(alertDiv, entitlementsSection);
-    }
-    
-    // Reload the page after a short delay to allow saving
-    setTimeout(() => {
-        window.location.reload();
-    }, 1500);
-}
+
 
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(initializeEventListeners, 100);
+    
+    // Add event listener for save button
+    const saveForm = document.getElementById('save-entitlements-form');
+    if (saveForm) {
+        saveForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            manualSaveEntitlements();
+        });
+    }
 });
 
 // Also add a fallback for when the page is fully loaded
 window.addEventListener('load', function() {
     setTimeout(initializeEventListeners, 200);
 });
+
+// Manual save function for the save button
+function manualSaveEntitlements() {
+    const submitBtn = document.querySelector('#save-entitlements-form button[type="submit"]');
+    if (!submitBtn) return;
+    
+    // Show loading state
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري الحفظ...';
+    submitBtn.disabled = true;
+    
+    // Get current values
+    const monthlyHours = parseFloat(document.getElementById('monthly_hours').value) || 0;
+    const hourlyRate = parseFloat(document.getElementById('hourly_rate').value) || 0;
+    const daysWorked = parseFloat(document.getElementById('days_worked').value) || 0;
+    const monthlyDays = parseFloat(document.getElementById('monthly_days').value) || 0;
+    
+    // Calculate values
+    const dailyHours = monthlyDays > 0 ? monthlyHours / monthlyDays : 0;
+    const actualHours = daysWorked * dailyHours;
+    const entitlementsByHours = actualHours * hourlyRate;
+    
+    const fullSalary = Math.round((monthlyHours * hourlyRate) / 10) * 10;
+    const dailySalary = monthlyDays > 0 ? fullSalary / monthlyDays : 0;
+    const entitlementsBySalary = daysWorked * dailySalary;
+    
+    // Get total advances from the page
+    const totalAdvancesText = document.querySelector('td.text-danger').textContent;
+    const totalAdvances = parseFloat(totalAdvancesText.replace(/[^\d.-]/g, '')) || 0;
+    
+    const netSalaryByHours = Math.max(0, entitlementsByHours - totalAdvances);
+    const netSalaryBySalary = Math.max(0, entitlementsBySalary - totalAdvances);
+    
+    // Prepare data for saving
+    const data = {
+        monthly_hours: monthlyHours,
+        hourly_rate: hourlyRate,
+        days_worked: daysWorked,
+        monthly_days: monthlyDays,
+        daily_hours: dailyHours,
+        actual_hours: actualHours,
+        entitlements_by_hours: entitlementsByHours,
+        full_salary: fullSalary,
+        daily_salary: dailySalary,
+        entitlements_by_salary: entitlementsBySalary,
+        net_salary_by_hours: netSalaryByHours,
+        net_salary_by_salary: netSalaryBySalary,
+        total_advances: totalAdvances,
+        _token: '{{ csrf_token() }}'
+    };
+    
+    // Send to server
+    fetch('{{ route("employees.save-entitlements", $employee) }}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+         if (result.success) {
+             // Reload the page to refresh all data
+             window.location.reload();
+         } else {
+             throw new Error(result.message || 'حدث خطأ أثناء الحفظ');
+         }
+     })
+    .catch(error => {
+        console.error('Error saving entitlements:', error);
+        
+        // Show error message
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+        alertDiv.innerHTML = `
+            <i class="fas fa-exclamation-circle"></i> حدث خطأ أثناء حفظ النتائج: ${error.message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        const entitlementsSection = document.getElementById('entitlements-section');
+        if (entitlementsSection) {
+            entitlementsSection.parentNode.insertBefore(alertDiv, entitlementsSection);
+        }
+        
+        // Auto-hide alert after 5 seconds
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 5000);
+    })
+    .finally(() => {
+        // Reset button state
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+}
 
 
 
@@ -822,22 +971,39 @@ function showErrorMessage(error) {
 
                                 <tr>
                                     <th>الراتب الشهري:</th>
-                                    <td>
-                                        @php
-                                            $monthlyHours = (float) request('monthly_hours', 208);
-                                            $hourlyRate = (float) request('hourly_rate', 36.06);
+                                    <td class="full-salary-display text-primary fw-bold">
+                                       @php
+                                            $latestEntitlement = $employee->latestEntitlement;
+                                            $defaultMonthlyHours = $latestEntitlement ? $latestEntitlement->monthly_hours : 208;
+                                            $defaultHourlyRate = $latestEntitlement ? $latestEntitlement->hourly_rate : 36.06;
+                                            $defaultDaysWorked = $latestEntitlement ? $latestEntitlement->days_worked : 26;
+                                            $defaultMonthlyDays = $latestEntitlement ? $latestEntitlement->monthly_days : 26;
+                                            
+                                            $monthlyHours = (float) request('monthly_hours', $defaultMonthlyHours);
+                                            $hourlyRate = (float) request('hourly_rate', $defaultHourlyRate);
+                                            $daysWorked = (float) request('days_worked', $defaultDaysWorked);
+                                            $monthlyDays = (float) request('monthly_days', $defaultMonthlyDays);
+                                            
                                             $fullSalary = round(($monthlyHours * $hourlyRate) / 10) * 10;
+                                            $dailySalary = $monthlyDays > 0 ? $fullSalary / $monthlyDays : 0;
+                                            $entitlementsBySalary = $daysWorked * $dailySalary;
+                                            $totalAdvances = $employee->advances->where('status', '!=', 'rejected')->sum('remaining_amount');
+                                            $netSalary = max(0, $entitlementsBySalary - $totalAdvances);
                                         @endphp
                                         {{ number_format(round($fullSalary / 10) * 10, 0, '.', ',') }} جنيه
-                                        <small class="text-muted">({{ number_format($monthlyHours, 0, '.', ',') }} ساعة × {{ number_format($hourlyRate, 0, '.', ',') }} جنيه)</small>
+
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>إجمالي السلف:</th>
                                     <td class="text-danger">{{ number_format($employee->total_remaining_advances, 0, '.', ',') }} جنيه</td>
                                 </tr>
+                                                                <tr>
+                                    <th>المستحقات(بدون خصم السلف):</th>
+                                    <td id="entitlements-by-salary-box" class="text-success fw-bold">{{ number_format($entitlementsBySalary, 0, '.', ',') }} جنيه</td>
+                                </tr>
                                 <tr>
-                                    <th>الراتب الصافي:</th>
+                                    <th> المستحقات: بعد خصم السلف</th>
                                     <td class="text-success fw-bold" id="net-salary-display">
                                         @php
                                             $latestEntitlement = $employee->latestEntitlement;
@@ -887,7 +1053,7 @@ function showErrorMessage(error) {
                     @endif
                 </div>
             </div>
-
+<form id="save-entitlements-form">
             <!-- Entitlements Calculator Print Details - Only visible when printing -->
             <div class="entitlements-print-details print-only">
                 <h6><i class="fas fa-calculator"></i> تفاصيل حاسبة المستحقات</h6>
@@ -961,7 +1127,22 @@ function showErrorMessage(error) {
                                 </div>
                             </div>
                         </div>
-                    </form>
+                                                        
+                                        <button type="submit" class="btn btn-success">
+                                            <i class="fas fa-save"></i> حفظ النتائج
+                                        </button>
+                                    </form>
+                    <!-- Save Entitlements Section -->
+                    <div class="row mt-3 screen-only">
+                        <div class="col-md-12">
+                            <div class="card border-success">
+
+                                <div class="card-body">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     
                     @php
                         
@@ -987,7 +1168,7 @@ function showErrorMessage(error) {
                         $netSalaryByHours = max(0, $entitlementsByHours - $totalAdvances);
                         $netSalaryBySalary = max(0, $entitlementsBySalary - $totalAdvances);
                     @endphp
-                    
+                   
                   <!-- نتائج الحساب -->
 <div class="alert alert-info">
     <h6><i class="fas fa-calculator"></i> نتائج الحساب:</h6>
@@ -1004,7 +1185,7 @@ function showErrorMessage(error) {
             </div>
             <div class="mb-2">
                 <strong>راتب اليوم الواحد:</strong>
-                <span class="text-primary fw-bold">{{ number_format($dailySalary, 0, '.', ',') }} جنيه</span>
+                <span id="daily-salary-display" class="text-primary fw-bold">{{ number_format($dailySalary, 0, '.', ',') }} جنيه</span>
             </div>
         </div>
 
@@ -1012,37 +1193,26 @@ function showErrorMessage(error) {
         <div class="col-md-6">
             <div class="mb-2">
                 <strong>الراتب الشهري الكامل:</strong>
-                <span class="text-primary fw-bold">{{ number_format(round($fullSalary), 0, '.', ',') }} جنيه</span>
+                <span class="full-salary-display text-primary fw-bold">{{ number_format(round($fullSalary), 0, '.', ',') }} جنيه</span>
             </div>
             <div class="mb-2">
                 <strong>إجمالي السلف المتبقية:</strong>
                 <span class="text-danger fw-bold">{{ number_format($totalAdvances, 0, '.', ',') }} جنيه</span>
             </div>
             <div class="mb-2">
-                <strong>المستحقات (بالراتب):</strong>
+                <strong>المستحقات بعدد الأيام (بدون خصم السلف):</strong>
+                <span id="entitlements-by-salary-table" class="text-success fw-bold">{{ number_format($entitlementsBySalary, 0, '.', ',') }}  جنيه</span>
+            </div>
+            <div class="mb-2">
+                <strong>المستحقات بعدد الأيام (بعد خصم السلف):</strong>
                 <span class="text-success fw-bold" id="entitlements-by-salary-display">{{ number_format(round(max(0, $entitlementsBySalary - $totalAdvances)), 0, '.', ',') }} جنيه</span>
             </div>
+
+            
         </div>
     </div>
 </div>
 
-                    <!-- Save Entitlements Section -->
-                    <div class="row mt-3 screen-only">
-                        <div class="col-md-12">
-                            <div class="card border-success">
-                                <div class="card-header bg-success text-white">
-                                    <h6 class="mb-0"><i class="fas fa-save"></i> حفظ نتائج حاسبة المستحقات</h6>
-                                </div>
-                                <div class="card-body">
-                                    <form id="save-entitlements-form">
-                                        <button type="submit" class="btn btn-success">
-                                            <i class="fas fa-save"></i> حفظ النتائج
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
 
