@@ -65,7 +65,7 @@
             background: linear-gradient(135deg, #ecf0f1, #bdc3c7);
             border-radius: 15px;
             padding: 30px;
-            margin-bottom: 30px;
+            margin-bottom: 5px;
             border: 3px solid #34495e;
         }
         
@@ -76,7 +76,7 @@
             margin-bottom: 20px;
             text-align: center;
             border-bottom: 3px solid #3498db;
-            padding-bottom: 15px;
+            padding-bottom: 2px;
         }
         
         .info-grid {
@@ -382,7 +382,7 @@
             }
             
             .calc-grid {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(2, 1fr);
             }
             
             .footer-grid {
@@ -413,7 +413,7 @@
     <div class="print-container">
         <!-- Print Header -->
         <div class="print-header">
-            <h1><i class="fas fa-user-tie"></i> تقرير تفاصيل الموظف</h1>
+            <h1><i></i>تقرير  الموظف :{{ $employee->name }} </h1>
             <p>تاريخ الطباعة: {{ date('Y-m-d H:i:s') }}</p>
         </div>
 
@@ -468,7 +468,7 @@
 
             <!-- Employee Information -->
             <div class="employee-info">
-                <h2><i class="fas fa-id-card"></i> {{ $employee->name }}</h2>
+                <!-- <h2><i class="fas fa-id-card"></i> {{ $employee->name }}</h2> -->
                 <div class="info-grid">
                     <div class="info-item">
                         <div class="info-label"><i class="fas fa-building"></i> الفرع</div>
@@ -505,11 +505,10 @@
             <!-- Entitlements Calculator -->
             
             <div class="entitlements-calculator">
-                <h4><i class="fas fa-calculator"></i> حاسبة المستحقات</h4>
                 
                 @if($latestEntitlement)
                     <div class="calc-info">
-                        <p><strong>آخر تحديث:</strong> {{ $latestEntitlement->created_at->format('Y-m-d H:i:s') }}</p>
+                        <p><strong> حساب المستحقات بعد آخر تحديث بتاريخ:</strong> {{ $latestEntitlement->created_at->format('Y-m-d H:i:s') }}</p>
                         @if($savedNotes)
                             <p><strong>ملاحظات:</strong> {{ $savedNotes }}</p>
                         @endif
@@ -522,7 +521,6 @@
                 
                 <!-- الطريقة الأولى: حساب بعدد الساعات -->
                 <div class="calc-section">
-                    <h6 class="calc-section-title">حساب المستحقات</h6>
                     <div class="calc-grid">
                         <div class="calc-item">
                             <div class="calc-label">ساعات اليوم الواحد</div>
