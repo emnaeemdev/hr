@@ -747,9 +747,7 @@
                 </div>
             </div>
             <hr style="margin: 20px 0; border-color: rgba(255,255,255,0.3);">
-            <p style="margin: 0; font-size: 0.9rem; opacity: 0.8;">
-                <i class="fas fa-shield-alt"></i> هذا التقرير تم إنشاؤه تلقائياً من نظام إدارة الموظفين - جميع الحقوق محفوظة
-            </p>
+
         </div>
     </div>
 
