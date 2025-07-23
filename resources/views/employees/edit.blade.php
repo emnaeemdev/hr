@@ -228,21 +228,7 @@
                                             </div>
                                         </div>
                                         
-                                        <!-- Save Entitlements Section -->
-                                        <div class="row mt-3">
-                                            <div class="col-12">
-                                                <div class="card border-primary">
-                                                    <div class="card-body">
-                                                        <h6 class="card-title">حفظ نتائج المستحقات</h6>
-                                                        <form id="save-entitlements-form">
-                                                            <button type="submit" class="btn btn-primary">
-                                                                <i class="fas fa-save me-2"></i>حفظ النتائج
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+
                                     </div>
                                 </div>
                             </div>
