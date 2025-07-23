@@ -573,24 +573,24 @@
                 </div>
             </div>
 -->
-            <!-- Custom Fields -->
-            @if($employee->customFieldValues->count() > 0)
-            <div class="section">
-                <div class="section-header">
-                    <i class="fas fa-cogs"></i> الحقول المخصصة
-                </div>
-                <div class="section-content">
-                    <div class="info-grid">
-                        @foreach($employee->customFieldValues as $fieldValue)
-                        <div class="info-item">
-                            <div class="info-label">{{ $fieldValue->customField->name }}</div>
-                            <div class="info-value">{{ $fieldValue->value }}</div>
+                <!-- Custom Fields
+                @if($employee->customFieldValues->count() > 0)
+                <div class="section">
+                    <div class="section-header">
+                        <i class="fas fa-cogs"></i> الحقول المخصصة
+                    </div>
+                    <div class="section-content">
+                        <div class="info-grid">
+                            @foreach($employee->customFieldValues as $fieldValue)
+                            <div class="info-item">
+                                <div class="info-label">{{ $fieldValue->customField->name }}</div>
+                                <div class="info-value">{{ $fieldValue->value }}</div>
+                            </div>
+                            @endforeach
                         </div>
-                        @endforeach
                     </div>
                 </div>
-            </div>
-            @endif
+                @endif -->
 
             <!-- Employee Advances -->
             <div class="section">
